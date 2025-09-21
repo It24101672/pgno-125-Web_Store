@@ -22,27 +22,17 @@ public class UserController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // Get all users
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    // Get a user by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id) {
         Optional<User> user = userRepository.findById(id);
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Get users by role
-    @GetMapping("/role/{role}")
-    public List<User> getUsersByRole(@PathVariable String role) {
-        return userRepository.findByRole(role);
-    }
-
-    // Create a new user
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         if (userRepository.findByEmail(user.getEmail()) != null) {
@@ -53,7 +43,6 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-    // Update a user
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @Valid @RequestBody User updatedUser) {
         Optional<User> existingUser = userRepository.findById(id);
@@ -74,7 +63,6 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-    // Delete a user
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         if (userRepository.existsById(id)) {

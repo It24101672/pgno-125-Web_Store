@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/imgs/logo.png">
     <title>Admin Management | Online Web Store</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
@@ -17,7 +18,7 @@
                         <span class="icon">
                             <img src="/assets/imgs/logo.png" width="50" height="60" alt="Logo">
                         </span>
-                    <span class="title">Online Web Store</span>
+                <span class="title">Online Web Store</span>
 
             </li>
             <li>
@@ -29,7 +30,7 @@
                 </a>
             </li>
             <li>
-                <a href="/user.html">
+                <a href="/AdminUser.html">
                         <span class="icon">
                             <ion-icon name="people-outline"></ion-icon>
                         </span>
@@ -45,7 +46,7 @@
                 </a>
             </li>
             <li>
-                <a href="/employee.html">
+                <a href="/AdminEmployee.html">
                         <span class="icon">
                             <ion-icon name="briefcase-outline"></ion-icon>
                         </span>
@@ -53,11 +54,19 @@
                 </a>
             </li>
             <li>
-                <a href="/product.html">
+                <a href="/AdminProduct.html">
                         <span class="icon">
                             <ion-icon name="bag-outline"></ion-icon>
                         </span>
                     <span class="title">Products</span>
+                </a>
+            </li>
+            <li>
+                <a href="login.html">
+                        <span class="icon">
+                            <ion-icon name="log-out-outline"></ion-icon>
+                        </span>
+                    <span class="title">Sign Out</span>
                 </a>
             </li>
             <li>
@@ -102,8 +111,6 @@
                     <label for="role">Role:</label>
                     <select id="role" name="role">
                         <option value="admin">Admin</option>
-                        <option value="editor">Editor</option>
-                        <option value="viewer">Viewer</option>
                     </select>
                     <input type="hidden" id="user-id" name="user-id">
                     <button type="submit">Save Admin</button>

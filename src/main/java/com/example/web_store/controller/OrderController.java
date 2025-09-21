@@ -18,27 +18,22 @@ public class OrderController {
     @Autowired
     private OrderRepository orderRepository;
 
-    // Get all orders
     @GetMapping
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    // Get an order by ID
     @GetMapping("/{orderID}")
     public ResponseEntity<Order> getOrderById(@PathVariable String orderID) {
         Optional<Order> order = orderRepository.findById(orderID);
-        return order.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return order.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Create a new order
     @PostMapping
     public Order createOrder(@Valid @RequestBody Order order) {
         return orderRepository.save(order);
     }
 
-    // Update an order
     @PutMapping("/{orderID}")
     public ResponseEntity<Order> updateOrder(@PathVariable String orderID, @Valid @RequestBody Order updatedOrder) {
         Optional<Order> existingOrder = orderRepository.findById(orderID);
@@ -50,7 +45,6 @@ public class OrderController {
         return ResponseEntity.ok(savedOrder);
     }
 
-    // Delete an order
     @DeleteMapping("/{orderID}")
     public ResponseEntity<Void> deleteOrder(@PathVariable String orderID) {
         if (orderRepository.existsById(orderID)) {

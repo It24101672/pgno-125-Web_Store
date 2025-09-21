@@ -18,28 +18,23 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
-    // Get all products
     @GetMapping
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    // Get a product by ID
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable String id) {
         Optional<Product> product = productRepository.findById(id);
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Get a product by productID
     @GetMapping("/productID/{productID}")
     public ResponseEntity<Product> getProductByProductID(@PathVariable String productID) {
         List<Product> products = productRepository.findAll();
         Optional<Product> product = products.stream()
                 .filter(p -> p.getProductID().equals(productID))
                 .findFirst();
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

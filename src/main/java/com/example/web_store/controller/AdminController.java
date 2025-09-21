@@ -22,21 +22,17 @@ public class AdminController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // Get all admins
     @GetMapping
     public List<Admin> getAllAdmins() {
         return adminRepository.findAll();
     }
 
-    // Get an admin by ID
     @GetMapping("/{id}")
     public ResponseEntity<Admin> getAdminById(@PathVariable String id) {
         Optional<Admin> admin = adminRepository.findById(id);
-        return admin.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return admin.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Create a new admin
     @PostMapping
     public ResponseEntity<?> createAdmin(@Valid @RequestBody Admin admin) {
         if (adminRepository.findByEmail(admin.getEmail()) != null) {
@@ -47,7 +43,6 @@ public class AdminController {
         return ResponseEntity.ok(savedAdmin);
     }
 
-    // Update an admin
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAdmin(@PathVariable String id, @Valid @RequestBody Admin updatedAdmin) {
         Optional<Admin> existingAdmin = adminRepository.findById(id);
@@ -68,7 +63,6 @@ public class AdminController {
         return ResponseEntity.ok(savedAdmin);
     }
 
-    // Delete an admin
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAdmin(@PathVariable String id) {
         if (adminRepository.existsById(id)) {

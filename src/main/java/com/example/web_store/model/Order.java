@@ -14,7 +14,6 @@ public class Order {
     @Positive(message = "Price must be positive")
     private double price;
 
-    // Constructors
     public Order() {}
 
     public Order(String orderID, double price) {
@@ -22,20 +21,8 @@ public class Order {
         this.price = price;
     }
 
-    // Getters and Setters
-    public String getOrderID() {
-        return orderID;
-    }
-
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
+    public String getOrderID() { return orderID; }
+    public void setOrderID(String orderID) { this.orderID = orderID; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 }

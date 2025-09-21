@@ -25,7 +25,6 @@ public class Product {
     @Positive(message = "Product Count must be positive")
     private Integer productCount;
 
-    // Constructors
     public Product() {}
 
     public Product(String productID, String productName, Double productPrice, Integer productCount) {
@@ -35,44 +34,14 @@ public class Product {
         this.productCount = productCount;
     }
 
-    // Getters and Setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getProductID() {
-        return productID;
-    }
-
-    public void setProductID(String productID) {
-        this.productID = productID;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public Double getProductPrice() {
-        return productPrice;
-    }
-
-    public void setProductPrice(Double productPrice) {
-        this.productPrice = productPrice;
-    }
-
-    public Integer getProductCount() {
-        return productCount;
-    }
-
-    public void setProductCount(Integer productCount) {
-        this.productCount = productCount;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getProductID() { return productID; }
+    public void setProductID(String productID) { this.productID = productID; }
+    public String getProductName() { return productName; }
+    public void setProductName(String productName) { this.productName = productName; }
+    public Double getProductPrice() { return productPrice; }
+    public void setProductPrice(Double productPrice) { this.productPrice = productPrice; }
+    public Integer getProductCount() { return productCount; }
+    public void setProductCount(Integer productCount) { this.productCount = productCount; }
 }
