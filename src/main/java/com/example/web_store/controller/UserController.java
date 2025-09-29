@@ -1,9 +1,14 @@
 package com.example.web_store.controller;
 
+import com.example.web_store.model.Product;
 import com.example.web_store.model.User;
+import com.example.web_store.repository.ProductRepository;
 import com.example.web_store.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -70,5 +78,73 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/products")
+    @PreAuthorize("hasAuthority('ROLE_seller')")
+    public ResponseEntity<?> addProduct(@Valid @RequestBody Product product) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName(); // Email from authenticated user
+        User user = userRepository.findByEmail(email);
+        if (user == null || !"seller".equals(user.getRole())) {
+            return ResponseEntity.badRequest().body("Invalid seller email");
+        }
+        if (productRepository.existsByProductID(product.getProductID())) {
+            return ResponseEntity.badRequest().body("Product ID already exists");
+        }
+        product.setSellerId(user.getId());
+        Product savedProduct = productRepository.save(product);
+        return ResponseEntity.ok(savedProduct);
+    }
+
+    @PutMapping("/products/{id}")
+    @PreAuthorize("hasAuthority('ROLE_seller')")
+    public ResponseEntity<?> updateProduct(@PathVariable String id, @Valid @RequestBody Product updatedProduct) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email);
+        if (user == null || !"seller".equals(user.getRole())) {
+            return ResponseEntity.badRequest().body("Invalid seller email");
+        }
+        Optional<Product> existingProduct = productRepository.findById(id);
+        if (!existingProduct.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!user.getId().equals(existingProduct.get().getSellerId())) {
+            return ResponseEntity.badRequest().body("Unauthorized: Product does not belong to this seller");
+        }
+        updatedProduct.setId(id);
+        updatedProduct.setSellerId(user.getId());
+        Product savedProduct = productRepository.save(updatedProduct);
+        return ResponseEntity.ok(savedProduct);
+    }
+
+    @GetMapping("/products")
+    @PreAuthorize("hasAuthority('ROLE_seller')")
+    public List<Product> getSellerProducts() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email);
+        return productRepository.findBySellerId(user.getId());
+    }
+
+    @DeleteMapping("/products/{id}")
+    @PreAuthorize("hasAuthority('ROLE_seller')")
+    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email);
+        if (user == null || !"seller".equals(user.getRole())) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Optional<Product> product = productRepository.findById(id);
+        if (!product.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!user.getId().equals(product.get().getSellerId())) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        productRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
