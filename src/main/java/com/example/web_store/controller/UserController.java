@@ -54,7 +54,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @Valid @RequestBody User updatedUser) {
         Optional<User> existingUser = userRepository.findById(id);
-        if (!existingUser.isPresent()) {
+        if (existingUser.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         User existingUserWithEmail = userRepository.findByEmail(updatedUser.getEmail());
@@ -84,7 +84,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ROLE_seller')")
     public ResponseEntity<?> addProduct(@Valid @RequestBody Product product) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName(); // Email from authenticated user
+        String email = auth.getName();
         User user = userRepository.findByEmail(email);
         if (user == null || !"seller".equals(user.getRole())) {
             return ResponseEntity.badRequest().body("Invalid seller email");
@@ -107,7 +107,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Invalid seller email");
         }
         Optional<Product> existingProduct = productRepository.findById(id);
-        if (!existingProduct.isPresent()) {
+        if (existingProduct.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         if (!user.getId().equals(existingProduct.get().getSellerId())) {
@@ -135,14 +135,14 @@ public class UserController {
         String email = auth.getName();
         User user = userRepository.findByEmail(email);
         if (user == null || !"seller".equals(user.getRole())) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
         Optional<Product> product = productRepository.findById(id);
-        if (!product.isPresent()) {
+        if (product.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         if (!user.getId().equals(product.get().getSellerId())) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
         productRepository.deleteById(id);
         return ResponseEntity.noContent().build();

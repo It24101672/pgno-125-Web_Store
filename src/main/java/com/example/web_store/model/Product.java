@@ -28,7 +28,7 @@ public class Product {
     @Positive(message = "Product Count must be positive")
     private Integer productCount;
 
-    private String images; // URL or file path
+    private String images;
 
     @NotBlank(message = "Seller ID is required")
     private String sellerId;
@@ -45,7 +45,6 @@ public class Product {
         this.sellerId = sellerId;
     }
 
-    // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getProductID() { return productID; }
