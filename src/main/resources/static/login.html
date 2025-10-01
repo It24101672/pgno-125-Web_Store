@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/imgs/logo.png">
     <title>Login | Online Web Store</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="stylesheet" href="/assets/css/login.css">
@@ -50,7 +51,7 @@
                 <div class="double_wrapper02 orange02"><div class="double_wrapper01 orange01"></div></div>
             </div>
             <div class="name">
-                <p>ONLINE WEB<br>STORE</p>
+                <p>POLA.LK</p>
                 <span class="name_circle01"></span>
                 <span class="name_circle02"></span>
             </div>
@@ -62,7 +63,7 @@
         <ul>
             <li>
                 <span class="icon">
-                    <img src="/assets/imgs/logo.png" width="50" height="60" alt="Logo">
+                    <img src="/assets/imgs/logo.png" width="80" height="100" alt="Logo">
                 </span>
                 <h4><span class="title">POLA.LK<br>Online Web Store</span></h4>
             </li>
@@ -89,22 +90,16 @@
             <div class="toggle">
                 <ion-icon name="menu-outline"></ion-icon>
             </div>
-            <div class="search">
-                <label>
-                    <input type="text" placeholder="Search here">
-                    <ion-icon name="search-outline"></ion-icon>
-                </label>
-            </div>
             <div class="user">
                 <img src="/assets/imgs/customer01.jpg" alt="User">
             </div>
         </div>
         <div class="form-container">
             <h2>Login</h2>
-            <form id="login-form" action="/login" method="post">
+            <form action="/login" method="post">
                 <div>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="username" required>
+                    <label for="username">Email:</label>
+                    <input type="email" id="username" name="username" required>
                 </div>
                 <div>
                     <label for="password">Password:</label>
@@ -113,7 +108,8 @@
                 <button type="submit">Login</button>
             </form>
             <div id="error-message" style="color: red; display: none;">Invalid email or password.</div>
-            <p>Don't have an account? <a href="/register">Register here</a></p>
+            <p>Don't have an account? <a href="/register.html">Register here</a></p>
+            <br>
         </div>
     </div>
 </div>
@@ -127,14 +123,10 @@
     toggle.onclick = function () { navigation.classList.toggle('active'); main.classList.toggle('active'); };
     const themeToggle = document.getElementById('theme-toggle');
     themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-theme'); });
-
-    // Handle URL error parameter
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('error')) {
-        document.getElementById('error-message').textContent = 'Invalid email or password';
+    if (urlParams.get('error') === 'invalid_role') {
         document.getElementById('error-message').style.display = 'block';
     }
-
     window.addEventListener('load', () => {
         setTimeout(() => {
             const preloader = document.getElementById('preloader');
@@ -142,10 +134,10 @@
             setTimeout(() => {
                 document.querySelector('.container').classList.add('visible');
             }, 800);
-        }, 6000);
+        }, 8000); // Match animation duration (5.9s + buffer)
     });
 </script>
-<script type="module" src="/js/ionicons.esm.js"></script>
-<script nomodule src="/js/ionicons.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
 </html>

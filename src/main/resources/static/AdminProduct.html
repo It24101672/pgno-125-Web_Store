@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/imgs/logo.png">
     <title>Product Management | Online Web Store</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
@@ -15,7 +16,7 @@
             <li>
 
                         <span class="icon">
-                            <img src="/assets/imgs/logo.png" width="50" height="60" alt="Logo">
+                            <img src="/assets/imgs/logo.png" width="80" height="100" alt="Logo">
                         </span>
                 <h4><span class="title">POLA.LK<br>Online Web Store</span></h4>
 
@@ -61,7 +62,7 @@
                 </a>
             </li>
             <li>
-                <a href="login.html">
+                <a href="/logout">
                         <span class="icon">
                             <ion-icon name="log-out-outline"></ion-icon>
                         </span>
@@ -84,12 +85,6 @@
         <div class="topbar">
             <div class="toggle">
                 <ion-icon name="menu-outline"></ion-icon>
-            </div>
-            <div class="search">
-                <label>
-                    <input type="text" placeholder="Search here">
-                    <ion-icon name="search-outline"></ion-icon>
-                </label>
             </div>
             <div class="user">
                 <img src="/assets/imgs/customer01.jpg" alt="User">
@@ -137,11 +132,13 @@
         document.body.classList.toggle('dark-theme');
     });
 
-    const apiUrl = '/api/products';
+    const apiUrl = '/api/products/public';
 
     // Load products and populate table
     function loadProducts() {
-        fetch(apiUrl)
+        fetch(apiUrl, {
+            credentials: 'include'
+        })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to fetch products');
                 return response.json();

@@ -1,13 +1,13 @@
 package com.example.web_store.config;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         return switch (role) {
             case "ROLE_admin" -> "/AdminDashboard.html";
             case "ROLE_customer" -> "/customer.html";
-            case "ROLE_seller" -> "/seller.html";
+            case "ROLE_seller" -> "/sellerProperties.html";
             case "ROLE_CUSTOMER_SERVICE" -> "/customer_service.html";
             case "ROLE_FINANCE_EXECUTION" -> "/finance_execution.html";
             case "ROLE_MARKETING_EXECUTIVE" -> "/marketing_executive.html";
