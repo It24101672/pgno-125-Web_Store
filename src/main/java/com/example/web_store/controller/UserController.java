@@ -109,6 +109,24 @@ public class UserController {
         return ResponseEntity.ok(savedProduct);
     }
 
+    @GetMapping("/products/{id}")
+    @PreAuthorize("hasAuthority('ROLE_seller')")
+    public ResponseEntity<?> getProductById(@PathVariable String id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email);
+        if (user == null || !"seller".equals(user.getRole())) {
+            return ResponseEntity.badRequest().body("Invalid seller email");
+        }
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isEmpty()) {
+            return ResponseEntity.badRequest().body("Product not found");
+        }
+        if (!user.getId().equals(product.get().getSellerId())) {
+            return ResponseEntity.badRequest().body("Unauthorized: Product does not belong to this seller");
+        }
+        return ResponseEntity.ok(product.get());
+    }
     @PutMapping("/products/{id}")
     @PreAuthorize("hasAuthority('ROLE_seller')")
     public ResponseEntity<?> updateProduct(@PathVariable String id, @Valid @RequestBody Product updatedProduct) {
@@ -120,7 +138,7 @@ public class UserController {
         }
         Optional<Product> existingProduct = productRepository.findById(id);
         if (existingProduct.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("Product not found");
         }
         if (!user.getId().equals(existingProduct.get().getSellerId())) {
             return ResponseEntity.badRequest().body("Unauthorized: Product does not belong to this seller");
