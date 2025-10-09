@@ -474,6 +474,216 @@ body {
     margin-top: 10px;
     display: none;
 }
+/* Table styling for ticket table */
+#ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#ticket-table th, #ticket-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#ticket-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    color: #333;
+}
+
+#ticket-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+#ticket-table button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#ticket-table button:hover {
+    background-color: #0056b3;
+}
+
+/* Reply form styling */
+#reply-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+#reply-form div {
+    margin-bottom: 15px;
+}
+
+#reply-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+#reply-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+#reply-form textarea[readonly] {
+    background-color: #f4f4f4;
+}
+
+#reply-form textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+#reply-form button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#reply-form button:hover {
+    background-color: #0056b3;
+}
+
+#cancel-reply {
+    background-color: #6c757d;
+}
+
+#cancel-reply:hover {
+    background-color: #5a6268;
+}
+
+/* Error and success message styling */
+.error {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+#ticket-success, #reply-success {
+    color: green;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Dark theme adjustments */
+.dark-theme #ticket-table {
+    background: #444;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme #ticket-table th {
+    background-color: #555;
+    color: #fff;
+}
+
+.dark-theme #ticket-table td {
+    border-bottom: 1px solid #666;
+    color: #fff;
+}
+
+.dark-theme #ticket-table tr:hover {
+    background-color: #555;
+}
+
+.dark-theme #ticket-table button {
+    background-color: #66b0ff;
+}
+
+.dark-theme #ticket-table button:hover {
+    background-color: #3385ff;
+}
+
+.dark-theme #reply-form {
+    background: #444;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme #reply-form label {
+    color: #fff;
+}
+
+.dark-theme #reply-form textarea {
+    background: #555;
+    border-color: #666;
+    color: #fff;
+}
+
+.dark-theme #reply-form textarea[readonly] {
+    background-color: #666;
+}
+
+.dark-theme #reply-form textarea:focus {
+    border-color: #66b0ff;
+    box-shadow: 0 0 5px rgba(102, 176, 255, 0.3);
+}
+
+.dark-theme #reply-form button {
+    background-color: #66b0ff;
+}
+
+.dark-theme #reply-form button:hover {
+    background-color: #3385ff;
+}
+
+.dark-theme #cancel-reply {
+    background-color: #6c757d;
+}
+
+.dark-theme #cancel-reply:hover {
+    background-color: #5a6268;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    #ticket-table th, #ticket-table td {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    #ticket-table button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    #reply-form {
+        padding: 15px;
+    }
+
+    #reply-form textarea {
+        font-size: 14px;
+    }
+
+    #reply-form button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
 
 /* ====================== Dark Theme ========================== */
 .dark-theme {
