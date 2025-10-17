@@ -31,7 +31,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             case "ROLE_seller" -> "/seller.html";
             case "ROLE_CUSTOMER_SERVICE" -> "/customer_service.html";
             case "ROLE_FINANCE_EXECUTION" -> "/finance_execution.html";
-            case "ROLE_MARKETING_EXECUTIVE" -> "/marketing_executive.html";
+            case "ROLE_MARKETING_EXECUTIVE" -> "/ratings.html";
             default -> "/login.html?error=invalid_role";
         };
     }
