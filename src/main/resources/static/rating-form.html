@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Your Purchase</title>
+    <style>
+        :root {
+            --star-size: 44px;
+            --star-gap: 8px;
+            --primary: #ffb400;
+            --muted: #e6e6e6;
+            --accent: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            background: linear-gradient(180deg, #f7fafc, #ffffff);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 720px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 8px 30px rgba(16, 24, 40, 0.08);
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 20px;
+        }
+
+        p.lead {
+            margin: 0 0 18px;
+            color: #475569;
+        }
+
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .stars {
+            display: inline-flex;
+            gap: var(--star-gap);
+            align-items: center;
+        }
+
+        .star {
+            width: var(--star-size);
+            height: var(--star-size);
+            display: inline-grid;
+            place-items: center;
+            cursor: pointer;
+            transition: transform .12s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .star:active {
+            transform: scale(.94);
+        }
+
+        .star input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .star svg {
+            width: calc(var(--star-size) - 6px);
+            height: calc(var(--star-size) - 6px);
+            filter: drop-shadow(0 2px 6px rgba(16, 24, 40, 0.06));
+        }
+
+        .star .filled {
+            fill: var(--muted);
+        }
+
+        .star[data-value="rated"] .filled {
+            fill: var(--primary);
+        }
+
+        .star[data-value="hovered"] .filled {
+            fill: color-mix(in srgb, var(--primary) 80%, white);
+        }
+
+        .rating-value {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .rating-meta {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        form textarea {
+            width: 100%;
+            min-height: 96px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e6e9ef;
+            resize: vertical;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        button.primary {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button.ghost {
+            background: transparent;
+            border: 1px solid #e6e9ef;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .hint {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 520px) {
+            :root {
+                --star-size: 36px;
+            }
+            .card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Rate Your Purchase</h1>
+    <p class="lead">How was your experience with this product? Share your feedback.</p>
+
+    <form id="ratingForm">
+        <div class="form-group">
+            <label for="orderId">Order ID *</label>
+            <input type="text" class="form-control" id="orderId" required>
+        </div>
+
+        <div class="form-group">
+            <label for="productId">Product ID *</label>
+            <input type="text" class="form-control" id="productId" required>
+        </div>
+
+        <div class="form-group">
+            <label for="customerId">Customer ID *</label>
+            <input type="text" class="form-control" id="customerId" required>
+        </div>
+
+        <div class="rating-row">
+            <div class="stars" id="starGroup" role="radiogroup" aria-label="Star rating">
+                <label class="star" data-index="1" tabindex="0">
+                    <input type="radio" name="rating" value="1" aria-label="1 star">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="filled" d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.401 8.174L12 18.896 4.665 23.172l1.401-8.174L.132 9.21l8.2-1.192z"/>
+                    </svg>
+                </label>
+                <label class="star" data-index="2" tabindex="0">
+                    <input type="radio" name="rating" value="2" aria-label="2 stars">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="filled" d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.401 8.174L12 18.896 4.665 23.172l1.401-8.174L.132 9.21l8.2-1.192z"/>
+                    </svg>
+                </label>
+                <label class="star" data-index="3" tabindex="0">
+                    <input type="radio" name="rating" value="3" aria-label="3 stars">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="filled" d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.401 8.174L12 18.896 4.665 23.172l1.401-8.174L.132 9.21l8.2-1.192z"/>
+                    </svg>
+                </label>
+                <label class="star" data-index="4" tabindex="0">
+                    <input type="radio" name="rating" value="4" aria-label="4 stars">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="filled" d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.401 8.174L12 18.896 4.665 23.172l1.401-8.174L.132 9.21l8.2-1.192z"/>
+                    </svg>
+                </label>
+                <label class="star" data-index="5" tabindex="0">
+                    <input type="radio" name="rating" value="5" aria-label="5 stars">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="filled" d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.401 8.174L12 18.896 4.665 23.172l1.401-8.174L.132 9.21l8.2-1.192z"/>
+                    </svg>
+                </label>
+            </div>
+
+            <div>
+                <div class="rating-value" id="displayValue">—</div>
+                <div class="rating-meta">Select your rating</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 16px">
+            <label for="review" style="display: block; margin-bottom: 8px; font-weight: 600; color: #0f172a">
+                Review (optional)
+            </label>
+            <textarea id="review" name="review" placeholder="Tell us what you liked or what could be improved..."></textarea>
+        </div>
+
+        <div class="controls">
+            <button class="primary" id="submitBtn" type="submit">Submit Rating</button>
+            <button class="ghost" id="clearBtn" type="button">Clear</button>
+            <div class="hint" style="margin-left: auto">Use arrow keys or numbers 1–5 to choose</div>
+        </div>
+    </form>
+</div>
+
+<script>
+    (function(){
+        const stars = Array.from(document.querySelectorAll('.star'));
+        const inputs = Array.from(document.querySelectorAll('.star input'));
+        const display = document.getElementById('displayValue');
+        const form = document.getElementById('ratingForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        let currentRating = 0;
+        let hoveredIndex = 0;
+
+        function updateVisual(){
+            stars.forEach((lbl, i)=>{
+                lbl.dataset.value = (i < (hoveredIndex || currentRating)) ? 'rated' : 'unrated';
+            });
+            display.textContent = currentRating ? currentRating + ' / 5' : '—';
+        }
+
+        // Click on a star -> set rating
+        inputs.forEach((input, idx)=>{
+            input.addEventListener('change', ()=>{
+                currentRating = parseInt(input.value,10);
+                updateVisual();
+            });
+        });
+
+        // Hover interactions
+        stars.forEach((lbl, idx)=>{
+            lbl.addEventListener('mouseenter', ()=>{
+                hoveredIndex = idx + 1;
+                updateVisual();
+            });
+            lbl.addEventListener('mouseleave', ()=>{
+                hoveredIndex = 0;
+                updateVisual();
+            });
+
+            // Keyboard support
+            lbl.addEventListener('keydown', (e)=>{
+                if(e.key === 'Enter' || e.key === ' '){
+                    e.preventDefault();
+                    const val = idx + 1;
+                    inputs[idx].checked = true;
+                    currentRating = val;
+                    updateVisual();
+                    inputs[idx].focus();
+                } else if(e.key === 'ArrowRight' || e.key === 'ArrowUp'){
+                    e.preventDefault();
+                    const next = Math.min(5, (currentRating || 0) + 1);
+                    inputs[next-1].checked = true;
+                    currentRating = next;
+                    updateVisual();
+                    stars[next-1].focus();
+                } else if(e.key === 'ArrowLeft' || e.key === 'ArrowDown'){
+                    e.preventDefault();
+                    const prev = Math.max(1, (currentRating || 0) - 1);
+                    inputs[prev-1].checked = true;
+                    currentRating = prev;
+                    updateVisual();
+                    stars[prev-1].focus();
+                } else if(/^[1-5]$/.test(e.key)){
+                    const num = parseInt(e.key,10);
+                    inputs[num-1].checked = true;
+                    currentRating = num;
+                    updateVisual();
+                    stars[num-1].focus();
+                }
+            });
+        });
+
+        // Clear button
+        clearBtn.addEventListener('click', ()=>{
+            inputs.forEach(i => i.checked = false);
+            currentRating = 0;
+            document.getElementById('review').value = '';
+            updateVisual();
+        });
+
+        // Submit handler
+        form.addEventListener('submit', async (e)=>{
+            e.preventDefault();
+
+            const orderId = document.getElementById('orderId').value.trim();
+            const productId = document.getElementById('productId').value.trim();
+            const customerId = document.getElementById('customerId').value.trim();
+            const reviewText = document.getElementById('review').value.trim();
+
+            if(!orderId || !productId || !customerId){
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            if(!currentRating){
+                alert('Please choose a rating between 1 and 5 before submitting.');
+                return;
+            }
+
+            // Check if already rated
+            try {
+                const checkResponse = await fetch(`/api/ratings/check-rating?orderId=${orderId}&productId=${productId}`);
+                const hasRated = await checkResponse.json();
+
+                if (hasRated) {
+                    alert('You have already rated this product for this order.');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking existing rating:', error);
+            }
+
+            const payload = {
+                orderId: orderId,
+                productId: productId,
+                customerId: customerId,
+                ratingValue: currentRating,
+                reviewText: reviewText
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/api/ratings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert('Thank you! Your rating has been submitted successfully.');
+                    clearBtn.click(); // Reset form
+                } else {
+                    alert('Error submitting rating. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Error submitting rating. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Rating';
+            }
+        });
+
+        // Initialize visuals
+        updateVisual();
+    })();
+</script>
+</body>
+</html>
