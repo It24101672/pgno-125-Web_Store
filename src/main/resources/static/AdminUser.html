@@ -104,7 +104,17 @@
                     <option value="seller">Seller</option>
                 </select>
                 <label for="password">Password:</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password">
+                <div id="password-requirements" style="font-size: 0.8em; color: #666;">
+                    Password must contain:
+                    <ul>
+                        <li id="length">At least 8 characters</li>
+                        <li id="uppercase">At least one uppercase letter</li>
+                        <li id="lowercase">At least one lowercase letter</li>
+                        <li id="number">At least one number</li>
+                        <li id="special">At least one special character</li>
+                    </ul>
+                </div>
                 <button type="submit">Save</button>
                 <button type="button" id="cancelEdit">Cancel</button>
             </form>
@@ -177,6 +187,29 @@
         setTimeout(() => errorDiv.style.display = 'none', 5000);
     }
 
+    // Password validation function
+    function validatePassword(password) {
+        const minLength = password.length >= 8;
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        // Update visual feedback
+        document.getElementById('length').style.color = minLength ? 'green' : 'red';
+        document.getElementById('uppercase').style.color = hasUppercase ? 'green' : 'red';
+        document.getElementById('lowercase').style.color = hasLowercase ? 'green' : 'red';
+        document.getElementById('number').style.color = hasNumber ? 'green' : 'red';
+        document.getElementById('special').style.color = hasSpecial ? 'green' : 'red';
+
+        return minLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+    }
+
+    // Real-time password validation
+    document.getElementById('password').addEventListener('input', function() {
+        validatePassword(this.value);
+    });
+
     // Load users and populate tables
     function loadUsers() {
         fetch(apiUrl, {
@@ -234,6 +267,12 @@
                 document.getElementById('role').value = user.role;
                 document.getElementById('password').value = '';
                 document.getElementById('cancelEdit').style.display = 'inline';
+                // Reset password requirements display
+                document.getElementById('length').style.color = 'inherit';
+                document.getElementById('uppercase').style.color = 'inherit';
+                document.getElementById('lowercase').style.color = 'inherit';
+                document.getElementById('number').style.color = 'inherit';
+                document.getElementById('special').style.color = 'inherit';
             })
             .catch(error => {
                 console.error('Error fetching user:', error);
@@ -263,16 +302,27 @@
     document.getElementById('userForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const id = document.getElementById('userId').value;
-        const method = id ? 'PUT' : 'POST';
-        const url = id ? `${apiUrl}/${id}` : apiUrl;
+        const password = document.getElementById('password').value;
+
+        // Skip password validation during edit if password field is empty
+        if (!id && !password) {
+            showError('Password is required for new users');
+            return;
+        }
+
+        if (password && !validatePassword(password)) {
+            showError('Password does not meet requirements');
+            return;
+        }
+
         const data = {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
             role: document.getElementById('role').value,
-            password: document.getElementById('password').value
+            password: password || undefined
         };
-        fetch(url, {
-            method: method,
+        fetch(id ? `${apiUrl}/${id}` : apiUrl, {
+            method: id ? 'PUT' : 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -298,6 +348,12 @@
         document.getElementById('userForm').reset();
         document.getElementById('userId').value = '';
         document.getElementById('cancelEdit').style.display = 'none';
+        // Reset password requirements display
+        document.getElementById('length').style.color = 'inherit';
+        document.getElementById('uppercase').style.color = 'inherit';
+        document.getElementById('lowercase').style.color = 'inherit';
+        document.getElementById('number').style.color = 'inherit';
+        document.getElementById('special').style.color = 'inherit';
     }
 
     // Cancel edit

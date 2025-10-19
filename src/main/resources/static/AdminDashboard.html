@@ -7,16 +7,40 @@
     <link rel="icon" type="image/png" href="/assets/imgs/logo.png">
     <title>Admin Dashboard | Online Web Store</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
+    <style>
+        .error-message {
+            color: #ff0000;
+            font-size: 0.9em;
+            margin: 10px 0;
+            display: none;
+            text-align: center;
+        }
+        .dark-theme .error-message {
+            color: #ff6666;
+        }
+        .btn-refresh {
+            background-color: #1B998B;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-refresh:hover {
+            background-color: #157a6e;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
+    <!-- Navigation -->
     <div class="navigation">
         <ul>
             <li>
                 <span class="icon">
                     <img src="/assets/imgs/logo.png" width="80" height="100" alt="Logo">
-                    <h4><span class="title">POLA.LK<br>Online Web Store</span></h4>
                 </span>
+                <h4><span class="title">POLA.LK<br>Online Web Store</span></h4>
             </li>
             <li>
                 <a href="/AdminDashboard.html">
@@ -76,6 +100,8 @@
             </li>
         </ul>
     </div>
+
+    <!-- Main Content -->
     <div class="main">
         <div class="topbar">
             <div class="toggle">
@@ -127,91 +153,180 @@
             <div class="recentOrders">
                 <div class="cardHeader">
                     <h2>Recent Orders</h2>
-                    <a href="#" class="btn">View All</a>
+                    <div>
+                        <button class="btn-refresh" onclick="loadOrders()">Refresh</button>
+                        <a href="finance_execution.html" class="btn">View All</a>
+                    </div>
                 </div>
+                <div id="orders-error" class="error-message"></div>
                 <table>
                     <thead>
                     <tr>
                         <th>Order ID</th>
+                        <th>Customer ID</th>
+                        <th>Order Date</th>
                         <th>Total Price</th>
+                        <th>status</th>
                     </tr>
                     </thead>
-                    <tbody id="orders-table-body">
-                    </tbody>
+                    <tbody id="orders-table-body"></tbody>
                 </table>
+            </div><div class="recentCustomers">
+            <div class="cardHeader">
+                <h2>Recent Customers</h2>
             </div>
-            <div class="recentCustomers">
-                <div class="cardHeader">
-                    <h2>Recent Customers</h2>
-                </div>
-                <table id="customers-table">
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
+            <table id="customers-table">
+                <tbody></tbody>
+            </table>
+        </div>
         </div>
     </div>
 </div>
+
 <script>
+    // Navigation hover effect
     let list = document.querySelectorAll('.navigation li');
-    function activeLink() { list.forEach(item => item.classList.remove('hovered')); this.classList.add('hovered'); }
+    function activeLink() {
+        list.forEach(item => item.classList.remove('hovered'));
+        this.classList.add('hovered');
+    }
     list.forEach(item => item.addEventListener('mouseover', activeLink));
+
+    // Menu toggle
     let toggle = document.querySelector('.toggle');
     let navigation = document.querySelector('.navigation');
     let main = document.querySelector('.main');
-    toggle.onclick = function () { navigation.classList.toggle('active'); main.classList.toggle('active'); };
+    toggle.onclick = function () {
+        navigation.classList.toggle('active');
+        main.classList.toggle('active');
+    };
+
+    // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-theme'); });
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+    });
+
+    // Display error messages
+    function showError(message) {
+        const errorDiv = document.getElementById('orders-error');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+        setTimeout(() => errorDiv.style.display = 'none', 5000);
+    }
+
+    // Load orders
     function loadOrders() {
-        fetch('/api/orders', {
-            credentials: 'include'
+        fetch('/api/orders/all?t' + new Date().getTime(), {
+            credentials: 'include',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error('Access denied. Please log in as an admin.');
+                    }
+                    throw new Error(`Failed to fetch orders: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(orders => {
                 const tbody = document.getElementById('orders-table-body');
+                if (!orders || orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2">No orders found</td></tr>';
+                    document.getElementById('sales-count').textContent = '0';
+                    document.getElementById('earnings-count').textContent = '$0.00';
+                    return;
+                }
                 tbody.innerHTML = orders.map(order => `
                     <tr>
-                        <td>${order.orderID || 'N/A'}</td>
-                        <td>$${order.price ? order.price.toFixed(2) : '0.00'}</td>
+                        <td>${order.id || order.orderID || 'N/A'}</td>
+                        <td>${order.userId}</td>
+                        <td>${order.orderDate}</td>
+                        <td>$${order.totalPrice || order.price ? (order.totalPrice || order.price).toFixed(2) : '0.00'}</td>
+                        <td>${order.status}</td>
                     </tr>
                 `).join('');
                 document.getElementById('sales-count').textContent = orders.length;
-                document.getElementById('earnings-count').textContent = `$${orders.reduce((sum, order) => sum + (order.price || 0), 0).toFixed(2)}`;
+                document.getElementById('earnings-count').textContent = `$${orders.reduce((sum, order) => sum + (order.totalPrice || order.price || 0), 0).toFixed(2)}`;
             })
-            .catch(error => console.error('Error fetching orders:', error));
+            .catch(error => {
+                console.error('Error fetching orders:', error.message);
+                showError(error.message);
+                document.getElementById('orders-table-body').innerHTML = '<tr><td colspan="2">Error loading orders</td></tr>';
+                document.getElementById('sales-count').textContent = '0';
+                document.getElementById('earnings-count').textContent = '$0.00';
+            });
     }
+
+    // Load customers
     function loadCustomers() {
-        fetch('/api/users', {
-            credentials: 'include'
+        fetch('/api/users?t=' + new Date().getTime(), {
+            credentials: 'include',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch users: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(users => {
                 const customers = users.filter(user => user.role === "customer");
                 const tbody = document.getElementById('customers-table').querySelector('tbody');
                 tbody.innerHTML = customers.slice(0, 8).map((customer, index) => `
                     <tr>
                         <td width="60px"><div class="imgBx"><img src="/assets/imgs/customer0${index % 2 + 1}.jpg" alt=""></div></td>
-                        <td><h4>${customer.name} <br> <span>${customer.email}</span></h4></td>
+                        <td><h4>${customer.name || 'N/A'} <br> <span>${customer.email || 'N/A'}</span></h4></td>
                     </tr>
                 `).join('');
                 document.getElementById('buyer-count').textContent = customers.length;
             })
-            .catch(error => console.error('Error fetching customers:', error));
+            .catch(error => {
+                console.error('Error fetching customers:', error.message);
+            });
     }
+
+    // Load sellers
     function loadSellers() {
-        fetch('/api/users', {
-            credentials: 'include'
+        fetch('/api/users?t=' + new Date().getTime(), {
+            credentials: 'include',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch users: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(users => {
                 const sellers = users.filter(user => user.role === "seller");
                 document.getElementById('seller-count').textContent = sellers.length;
             })
-            .catch(error => console.error('Error fetching sellers:', error));
+            .catch(error => {
+                console.error('Error fetching sellers:', error.message);
+            });
     }
+
+    // Initial load
     loadOrders();
     loadCustomers();
     loadSellers();
+
+    // Periodic refresh for orders (every 30 seconds)
+    setInterval(loadOrders, 30000);
 </script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
