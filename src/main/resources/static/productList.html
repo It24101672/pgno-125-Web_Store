@@ -41,7 +41,11 @@
 <div class="container mt-5 position-relative">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Available Products</h2>
-        <a href="/products/sorted-by-price" class="btn btn-outline-primary">Sort by Price</a>
+        <button onclick="sortByPrice()" class="btn btn-outline-primary">Sort by Price</button>
+    </div>
+
+    <div class="mb-3">
+        <input type="text" id="searchBox" class="form-control" placeholder="Search products...">
     </div>
 
     <div id="error-message" class="alert alert-danger" style="display: none;"></div>
@@ -56,6 +60,59 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    let allProducts = [];
+
+    function searchProducts() {
+        const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+        const filteredProducts = allProducts.filter(product => 
+            product.productName.toLowerCase().includes(searchTerm)
+        );
+        displayProducts(filteredProducts);
+    }
+
+    function sortByPrice() {
+        const sortedProducts = [...allProducts].sort((a, b) => a.productPrice - b.productPrice);
+        displayProducts(sortedProducts);
+    }
+
+    function displayProducts(products) {
+        const productList = document.getElementById('product-list');
+        const emptyMessage = document.getElementById('empty-message');
+        
+        productList.innerHTML = '';
+        
+        if (products.length === 0) {
+            emptyMessage.style.display = 'block';
+            return;
+        }
+        
+        emptyMessage.style.display = 'none';
+        
+        products.forEach(product => {
+            const col = document.createElement('div');
+            col.className = 'col';
+            col.innerHTML = `
+                <div class="card h-100 product-card">
+                    ${product.images ? `
+                        <img src="${product.images}" class="card-img-top" alt="Product image">
+                    ` : `
+                        <img src="/css/images/placeholder.png" class="card-img-top" alt="No image available">
+                    `}
+                    <div class="card-body">
+                        <h5 class="card-title">${product.productName || 'N/A'}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">${product.productPrice ? product.productPrice.toFixed(2) : '0.00'} LKR</h6>
+                        <p class="card-text">${product.description || 'No description'}</p>
+                        <p class="card-text"><small class="text-muted">Stock: ${product.productCount || 0}</small></p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="/productDetails.html?id=${product.id}" class="btn btn-sm btn-primary">View Details</a>
+                    </div>
+                </div>
+            `;
+            productList.appendChild(col);
+        });
+    }
+
     // Fetch and display products
     function fetchProducts() {
         console.log('Fetching products...');
@@ -83,33 +140,8 @@
             })
             .then(products => {
                 console.log('Products received:', products);
-                if (products.length === 0) {
-                    emptyMessage.style.display = 'block';
-                    return;
-                }
-                products.forEach(product => {
-                    const col = document.createElement('div');
-                    col.className = 'col';
-                    col.innerHTML = `
-                        <div class="card h-100 product-card">
-                            ${product.images ? `
-                                <img src="${product.images}" class="card-img-top" alt="Product image">
-                            ` : `
-                                <img src="/css/images/placeholder.png" class="card-img-top" alt="No image available">
-                            `}
-                            <div class="card-body">
-                                <h5 class="card-title">${product.productName || 'N/A'}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">${product.productPrice ? product.productPrice.toFixed(2) : '0.00'} LKR</h6>
-                                <p class="card-text">${product.description || 'No description'}</p>
-                                <p class="card-text"><small class="text-muted">Stock: ${product.productCount || 0}</small></p>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <a href="/productDetails.html?id=${product.id}" class="btn btn-sm btn-primary">View Details</a>
-                            </div>
-                        </div>
-                    `;
-                    productList.appendChild(col);
-                });
+                allProducts = products;
+                displayProducts(products);
             })
             .catch(error => {
                 console.error('Fetch error:', error);
@@ -121,6 +153,8 @@
 
     // Fetch products on page load
     window.addEventListener('load', fetchProducts);
+    
+    document.getElementById('searchBox').addEventListener('input', searchProducts);
 </script>
 </body>
 </html>
