@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | POLA.LK</title>
+    <link rel="icon" type="image/png" href="/assets/imgs/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .order-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+        .item-details {
+            flex-grow: 1;
+        }
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .item-price {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .total-section {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .form-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        .btn-place-order {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        .btn-place-order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+        }
+        .loading-spinner {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/assets/imgs/logo.png" alt="POLA.LK Logo" width="80">
+                POLA.LK
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/productList.html">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart.html">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/orders.html">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer.html">My Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/rating-form.html">Ratings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout" id="logout-link">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="checkout-container">
+        <div class="row">
+            <!-- Order Summary -->
+            <div class="col-lg-5">
+                <div class="order-summary">
+                    <h4 class="section-title">
+                        <i class="bi bi-bag"></i> Order Summary
+                    </h4>
+                    <div id="cart-items-summary">
+                        <!-- Cart items will be loaded here -->
+                    </div>
+                    <div class="total-section">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">$0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Total: <span id="total-amount">$0.00</span></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Form -->
+            <div class="col-lg-7">
+                <form id="checkout-form">
+                    <!-- Shipping Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-truck"></i> Shipping Information
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="shippingName" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="shippingName" name="shippingName" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="shippingAddress" class="form-label">Address *</label>
+                                <input type="text" class="form-control" id="shippingAddress" name="shippingAddress" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="shippingCity" class="form-label">City *</label>
+                                <input type="text" class="form-control" id="shippingCity" name="shippingCity" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="postalCode" class="form-label">Postal Code *</label>
+                                <input type="text" class="form-control" id="postalCode" name="postalCode" required>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="phoneNumber" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-credit-card"></i> Payment Information
+                        </h4>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            This is a demo application. No actual payment will be processed.
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="expiryDate" class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" readonly>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="123" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Place Order Button -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-place-order btn-lg">
+                            <span class="button-text">
+                                <i class="bi bi-lock"></i> Place Order
+                            </span>
+                            <span class="loading-spinner">
+                                <i class="bi bi-arrow-clockwise"></i> Processing...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle"></i> Order Placed Successfully!
+                    </h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-check-circle text-success" style="font-size: 48px;"></i>
+                    </div>
+                    <h5>Thank you for your order!</h5>
+                    <p>Your order has been placed successfully.</p>
+                    <p><strong>Order ID:</strong> <span id="order-id"></span></p>
+                    <p><strong>Total Amount:</strong> $<span id="order-total"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="window.location.href='customer.html'">
+                        View My Orders
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let cartItems = [];
+        let totalAmount = 0;
+
+        // Load cart items on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCartItems();
+        });
+
+        async function loadCartItems() {
+            try {
+                const response = await fetch('/api/cart', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    cartItems = await response.json();
+                    displayCartSummary();
+                } else if (response.status === 401) {
+                    alert('Please log in to continue');
+                    window.location.href = 'login.html';
+                } else {
+                    throw new Error('Failed to load cart items');
+                }
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                alert('Error loading cart items. Please try again.');
+            }
+        }
+
+        function displayCartSummary() {
+            const cartSummary = document.getElementById('cart-items-summary');
+            totalAmount = 0;
+
+            if (cartItems.length === 0) {
+                cartSummary.innerHTML = '<p class="text-center text-muted">Your cart is empty</p>';
+                document.querySelector('.btn-place-order').disabled = true;
+                return;
+            }
+
+            cartSummary.innerHTML = cartItems.map(item => {
+                const itemTotal = item.productPrice * item.quantity;
+                totalAmount += itemTotal;
+
+                return `
+                    <div class="cart-item">
+                        <img src="${item.image || 'assets/images/default-product.jpg'}" 
+                             alt="${item.productName}" class="item-image">
+                        <div class="item-details">
+                            <div class="item-name">${item.productName}</div>
+                            <div class="text-muted">Quantity: ${item.quantity}</div>
+                        </div>
+                        <div class="item-price">$${itemTotal.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('subtotal').textContent = `$${totalAmount.toFixed(2)}`;
+            document.getElementById('total-amount').textContent = `$${totalAmount.toFixed(2)}`;
+        }
+
+      
+        document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (cartItems.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const checkoutData = {
+                shippingName: formData.get('shippingName'),
+                shippingAddress: formData.get('shippingAddress'),
+                shippingCity: formData.get('shippingCity'),
+                postalCode: formData.get('postalCode'),
+                phoneNumber: formData.get('phoneNumber')
+            };
+
+            // loading state
+            const button = document.querySelector('.btn-place-order');
+            const buttonText = button.querySelector('.button-text');
+            const loadingSpinner = button.querySelector('.loading-spinner');
+            
+            button.disabled = true;
+            buttonText.style.display = 'none';
+            loadingSpinner.style.display = 'inline';
+
+            try {
+                const response = await fetch('/api/orders/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(checkoutData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success modal
+                    document.getElementById('order-id').textContent = result.orderId;
+                    document.getElementById('order-total').textContent = result.totalAmount.toFixed(2);
+                    
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                } else {
+                    throw new Error(result.error || 'Failed to place order');
+                }
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('Error placing order: ' + error.message);
+            } finally {
+                
+                button.disabled = false;
+                buttonText.style.display = 'inline';
+                loadingSpinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

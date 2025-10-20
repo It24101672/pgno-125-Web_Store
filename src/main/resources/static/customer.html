@@ -9,10 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         /* Existing customer.html styles */
-        .navbar {background-color: #3161ff !important;}
         .container { display: flex; flex-direction: column; }
         .dark-theme { background-color: #323233; color: #ffffff; }
-        .dark-theme .navbar { background-color: #3161ff !important; }
         .dark-theme .card { background-color: #444; color: #fff; border-color: #666; }
         .dark-theme .card-header { background-color: #555; }
         .dark-theme .table { background-color: #444; color: #fff; }
@@ -71,6 +69,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/cart.html">Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/orders.html">My Orders</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/customer.html">My Account</a>
@@ -323,7 +324,7 @@
             });
 
         // Fetch order history
-        fetch('/api/orders', {
+        fetch('/api/orders/my-orders', {
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
@@ -345,11 +346,11 @@
                     const row = document.createElement('tr');
                     const date = new Date(order.orderDate).toLocaleDateString();
                     row.innerHTML = `
-                        <td>${order.orderID}</td>
+                        <td>${order.id}</td>
                         <td>${date}</td>
-                        <td>${order.price.toFixed(2)} LKR</td>
-                        <td><span class="badge ${order.status === 'Delivered' ? 'bg-success' : 'bg-warning'}">${order.status}</span></td>
-                        <td><a href="/orderDetails.html?id=${order.orderID}" class="btn btn-outline-primary btn-sm">View Details</a></td>
+                        <td>${order.totalAmount.toFixed(2)} LKR</td>
+                        <td><span class="badge ${order.status === 'DELIVERED' ? 'bg-success' : 'bg-warning'}">${order.status}</span></td>
+                        <td><a href="/orderDetails.html?id=${order.id}" class="btn btn-outline-primary btn-sm">View Details</a></td>
                     `;
                     orderItemsBody.appendChild(row);
                 });

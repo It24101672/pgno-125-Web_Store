@@ -13,7 +13,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
         <a class="navbar-brand" href="/">
-            <img src="/assets/imgs/logo.png" alt="POLA.LK Logo" width="100">
+            <img src="/assets/imgs/logo.png" alt="POLA.LK Logo" width="80">
             POLA.LK
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -251,10 +251,41 @@
             });
     });
 
-    // Checkout (placeholder)
-    document.getElementById('checkout').addEventListener('click', () => {
-        alert('Checkout functionality not implemented yet.');
-        // Implement checkout API call here
+    // Checkout
+    document.getElementById('checkout').addEventListener('click', async () => {
+        try {
+            // Check if cart has items
+            const response = await fetch('/api/cart', {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.status === 401) {
+                alert('Please log in to proceed to checkout.');
+                window.location.href = '/login.html';
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to check cart');
+            }
+
+            const cartItems = await response.json();
+            
+            if (cartItems.length === 0) {
+                alert('Your cart is empty. Add some items before checkout.');
+                return;
+            }
+
+            // Redirect to checkout page
+            window.location.href = '/checkout.html';
+            
+        } catch (error) {
+            console.error('Error during checkout:', error);
+            alert('Error accessing checkout. Please try again.');
+        }
     });
 
     // Load cart on page load

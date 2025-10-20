@@ -17,4 +17,8 @@ public interface RatingRepository extends JpaRepository<Rating, String> {
     List<Rating> findAllOrderByDateDesc();
 
     boolean existsByOrderIdAndProductId(String orderId, String productId);
+    
+    boolean existsByCustomerIdAndProductIdAndOrderId(String customerId, String productId, String orderId);
+    
+    boolean existsByCustomerIdAndProductId(String customerId, String productId);
 }
