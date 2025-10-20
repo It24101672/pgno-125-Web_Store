@@ -188,6 +188,8 @@
         <p>You need to be logged in to view your account details.</p>
         <a href="/login.html" class="btn btn-primary">Log In</a>
     </div>
+
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -297,9 +299,23 @@
                 document.getElementById('user-email').textContent = user.email || 'No email provided';
                 customerDetails.style.display = 'block';
 
-                // Placeholder for account actions
-                document.getElementById('edit-profile').addEventListener('click', () => {
-                    alert('Edit Profile functionality not implemented yet.');
+                document.getElementById('edit-profile').addEventListener('click', function() {
+                    var newName = prompt("Enter new name:", user.name);
+                    if (newName == null) return;
+                    
+                    var newEmail = prompt("Enter new email:", user.email);
+                    if (newEmail == null) return;
+                    
+                    if (newName.trim() == "") {
+                        alert("Name cannot be empty!");
+                        return;
+                    }
+                    if (newEmail.trim() == "" || newEmail.indexOf("@") == -1) {
+                        alert("Please enter a valid email!");
+                        return;
+                    }
+                    
+                    updateProfile(newName.trim(), newEmail.trim());
                 });
                 document.getElementById('change-password').addEventListener('click', () => {
                     alert('Change Password functionality not implemented yet.');
@@ -361,6 +377,35 @@
                 orderItemsBody.innerHTML = '<tr><td colspan="5" class="text-center">Failed to load orders.</td></tr>';
             });
     }
+
+    function updateProfile(name, email) {
+        var data = {
+            name: name,
+            email: email
+        };
+        
+        fetch('/api/users/me', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        })
+        .then(function(response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Update failed');
+            }
+        })
+        .then(function(updatedUser) {
+            document.getElementById('user-name').textContent = updatedUser.name;
+            document.getElementById('user-email').textContent = updatedUser.email;
+            alert('Profile updated successfully!');
+        })
+        .catch(function(error) {
+             alert('Error: Could not update profile. Please try again.');
+         });
+     }
 
     // Load customer data and tickets on page load
     window.addEventListener('load', fetchCustomerData);

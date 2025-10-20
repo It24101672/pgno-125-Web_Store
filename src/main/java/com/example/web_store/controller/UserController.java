@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,6 +55,26 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateCurrentUserProfile(@RequestBody Map<String, String> updates) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByEmail(email);
+        
+        if (updates.containsKey("name") && updates.get("name") != null) {
+            currentUser.setName(updates.get("name"));
+        }
+        if (updates.containsKey("email") && updates.get("email") != null) {
+            if (userRepository.existsByEmail(updates.get("email")) && 
+                !updates.get("email").equals(currentUser.getEmail())) {
+                return ResponseEntity.badRequest().body("Email already exists");
+            }
+            currentUser.setEmail(updates.get("email"));
+        }
+        
+        userRepository.save(currentUser);
+        return ResponseEntity.ok(currentUser);
     }
 
     @PostMapping
