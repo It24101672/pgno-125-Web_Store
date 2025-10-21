@@ -156,6 +156,22 @@
                         <h4 class="section-title">
                             <i class="bi bi-truck"></i> Shipping Information
                         </h4>
+                        
+                        <!-- Saved Address Selection -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label for="savedAddresses" class="form-label">
+                                    <i class="bi bi-house"></i> Use Saved Address (Optional)
+                                </label>
+                                <select class="form-control" id="savedAddresses">
+                                    <option value="">Select a saved address or enter manually below</option>
+                                </select>
+                                <small class="text-muted">
+                                    You can manage your addresses in your <a href="/customer.html" target="_blank">profile</a>.
+                                </small>
+                            </div>
+                        </div>
+                        
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="shippingName" class="form-label">Full Name *</label>
@@ -313,6 +329,61 @@
             document.getElementById('subtotal').textContent = `$${totalAmount.toFixed(2)}`;
             document.getElementById('total-amount').textContent = `$${totalAmount.toFixed(2)}`;
         }
+
+        // Load saved addresses from localStorage
+        function loadSavedAddresses() {
+            const savedAddresses = localStorage.getItem('userAddresses');
+            const addressSelect = document.getElementById('savedAddresses');
+            
+            // Clear existing options except the first one
+            addressSelect.innerHTML = '<option value="">Select a saved address or enter manually below</option>';
+            
+            if (savedAddresses) {
+                const addresses = JSON.parse(savedAddresses);
+                
+                addresses.forEach((address, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${address.label} - ${address.street}, ${address.city}`;
+                    addressSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Populate shipping form with selected address
+        function populateShippingForm(addressIndex) {
+            const savedAddresses = localStorage.getItem('userAddresses');
+            
+            if (savedAddresses && addressIndex !== '') {
+                const addresses = JSON.parse(savedAddresses);
+                const selectedAddress = addresses[parseInt(addressIndex)];
+                
+                if (selectedAddress) {
+                    // Populate the form fields
+                    document.getElementById('shippingAddress').value = selectedAddress.street;
+                    document.getElementById('shippingCity').value = selectedAddress.city;
+                    document.getElementById('postalCode').value = selectedAddress.postalCode;
+                    
+                    // Note: We don't populate shippingName and phoneNumber as they're not stored in the address
+                    // The user will still need to enter these manually
+                }
+            } else {
+                // Clear the form if no address is selected
+                document.getElementById('shippingAddress').value = '';
+                document.getElementById('shippingCity').value = '';
+                document.getElementById('postalCode').value = '';
+            }
+        }
+
+        // Event listener for address selection
+        document.getElementById('savedAddresses').addEventListener('change', function() {
+            populateShippingForm(this.value);
+        });
+
+        // Load saved addresses when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedAddresses();
+        });
 
       
         document.getElementById('checkout-form').addEventListener('submit', async function(e) {

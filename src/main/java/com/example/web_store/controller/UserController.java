@@ -77,6 +77,42 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> passwordData) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        if (email == null || email.equals("anonymousUser")) {
+            return ResponseEntity.status(401).body("User not authenticated");
+        }
+        
+        User currentUser = userRepository.findByEmail(email);
+        if (currentUser == null) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+        
+        String currentPassword = passwordData.get("currentPassword");
+        String newPassword = passwordData.get("newPassword");
+        
+        if (currentPassword == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Current password and new password are required");
+        }
+        
+        // Verify current password
+        if (!passwordEncoder.matches(currentPassword, currentUser.getPassword())) {
+            return ResponseEntity.badRequest().body("Current password is incorrect");
+        }
+        
+        // Validate new password
+        if (newPassword.length() < 6) {
+            return ResponseEntity.badRequest().body("New password must be at least 6 characters long");
+        }
+        
+        // Update password
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(currentUser);
+        
+        return ResponseEntity.ok().body("Password changed successfully");
+    }
+
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
